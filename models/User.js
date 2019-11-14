@@ -21,7 +21,10 @@ const userSchema = new Schema({
     userImage: String,
     favorites: Array,
     friends: Array,
-    deletedAt: null
+    deletedAt: {
+        type: Date, 
+        default: null
+    }
 }, {
     timestamps: {
         createdAt: 'created_at',

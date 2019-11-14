@@ -7,11 +7,17 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const bodyParser = requisre ('body-parser');
+const bodyParser = require ('body-parser');
 const MongoStore = require ('connect-mongo')(session);
+const cors = require('cors')
 
+//Routes files require
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
+const postRouter = require('./routes/post');
+const commentsRouter = require('./routes/comments');
+
+
 // EXPRESS SERVER INSTANCE
 const app = express();
 
@@ -65,23 +71,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ROUTER MIDDLEWARE
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/auth', auth);
+app.use('/auth', authRouter);
+app.use('/posts', postRouter);
+app.use('/posts', commentsRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use((req, res, next) => {
+  res.status(404).json({ code: 'not found' });
 });
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+app.use((err, req, res, next) => {
+  // always log the error
+  console.error('ERROR', req.method, req.path, err);
+  // only render if the error ocurred before sending the response
+  if (!res.headersSent) {
+    const statusError = err.status || '500';
+    res.status(statusError).json(err);
+  }
 });
 
 module.exports = app;

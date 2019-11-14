@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const postSchema = new Schema({
-    author: {
-        type: ObjectId,
+    author: [{
+        type: Schema.Types.ObjectId,
         ref: 'User'
-      },
+      }],
     theme: {
         type: String,  
         required: true
@@ -28,7 +28,10 @@ const postSchema = new Schema({
         type: Number,  
         default: 0
         },
-    deletedAt: null
+    deletedAt: {
+        type: Date, 
+        default: null
+    }
 }, {
     timestamps: {
         createdAt: 'created_at',
