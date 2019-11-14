@@ -5,6 +5,9 @@ const bodyParser = require('body-parser');
 const User = require("../models/User");
 const Post = require("../models/Post");
 
+//cloudinary setup
+const uploadCloud = require('../configs/cloudinary-setup.js')
+
 // HELPER FUNCTIONS
 
 const {
@@ -28,11 +31,23 @@ router.get('/:id', isLoggedIn(), async (req, res, next) => {
 
 //  POST    '/create'
 
-router.post("/create", isLoggedIn(), async (req, res, next) => {
-    const { theme, city, country, images, makeThisHappend, textContent } = req.body;
+router.post("/create", isLoggedIn(), uploadCloud.single('images'), async (req, res, next) => {
+    const { theme, city, country, makeThisHappend, textContent } = req.body;
     const user = req.session.currentUser
+    const images = req.file.url
     try {
-        const newPost = await Post.create({ author: user._id, theme, city, country, images, makeThisHappend, textContent });
+        //montar post
+        const newPostDetails = {
+            author: user._id,
+            theme,
+            city,
+            country,
+            makeThisHappend,
+            textContent,
+            images
+        }
+
+        const newPost = await Post.create(newPostDetails);
         res
           .status(200) //  OK
           .json(newPost);
@@ -45,9 +60,10 @@ router.post("/create", isLoggedIn(), async (req, res, next) => {
 
 //  PUT    '/edit'
 
-router.put('/:id/edit', isLoggedIn(), async (req, res, next) => {
+router.put('/:id/edit', isLoggedIn(),uploadCloud.single('images'), async (req, res, next) => {
     const postId = req.params.id;
-    const { theme, city, country, images, makeThisHappend, textContent } = req.body;
+    const { theme, city, country, makeThisHappend, textContent } = req.body;
+    const images = req.file.url
 
     const newPost = { theme, city, country, images, makeThisHappend, textContent }
 

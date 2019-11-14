@@ -18,7 +18,10 @@ const userSchema = new Schema({
         min:6 , 
         required: true
         },
-    userImage: String,
+    userImage: {
+        type:String,
+        default:'https://res.cloudinary.com/dgd9bq9vs/image/upload/v1573740640/avatar-gallery/default-user-icon-11_ion4jo.jpg'
+    },
     favorites: Array,
     friends: Array,
     deletedAt: {

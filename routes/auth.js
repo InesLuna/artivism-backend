@@ -5,6 +5,9 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const User = require("../models/User");
 
+//cloudinary API
+const uploadCloud = require('../configs/cloudinary-setup.js')
+
 // HELPER FUNCTIONS
 
 const {
@@ -54,8 +57,8 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), async (req, res, next
 
 //  POST    '/signup'
 
-router.post("/signup", isNotLoggedIn(), validationLoggin(), async (req, res, next) => {
-    const { username, email, aboutMe, userImage, password } = req.body;
+router.post("/signup", uploadCloud.single('userImage'), isNotLoggedIn(), validationLoggin(), async (req, res, next) => {
+    const { username, email, aboutMe, password } = req.body;
 
     try {
   
@@ -65,9 +68,22 @@ router.post("/signup", isNotLoggedIn(), validationLoggin(), async (req, res, nex
       if (usernameExists) return next(createError(400,'username already exist'));
       if (emailExists) return next(createError(400,'email already exist'));
   
-        const salt = bcrypt.genSaltSync(saltRounds);
-        const hashPass = bcrypt.hashSync(password, salt);
-        const newUser = await User.create({ username, email, aboutMe, userImage, password: hashPass });
+      const salt = bcrypt.genSaltSync(saltRounds);
+      const hashPass = bcrypt.hashSync(password, salt);
+
+      //Assemble new user
+      const newUserDetails = {
+        username,
+        email,
+        aboutMe,
+        password:hashPass
+      }
+
+      //check if user included a custom avatar
+      if(req.file){
+        newUserDetails.userImage = req.file.url;
+      }
+      const newUser = await User.create(newUserDetails);
      
         req.session.currentUser = newUser;
         res
@@ -92,14 +108,17 @@ router.post('/logout', isLoggedIn(), (req, res, next) => {
 
 //  PUT    '/edit'
 
-router.put('/edit', isLoggedIn(), async (req, res, next) => {
+router.put('/edit', uploadCloud.single('userImage'), isLoggedIn(), async (req, res, next) => {
   const user = req.session.currentUser;
-  const { aboutMe, userImage } = req.body;
-  const newUser = {
-    aboutMe, 
-    userImage
+  const { aboutMe } = req.body;
+  //setear detalles de usuario
+  const newUserDetails = {
+    aboutMe
   }
-  const userUpdated = await User.findByIdAndUpdate(user._id, newUser,{new:true})
+  if(req.file){
+    newUserDetails.userImage = req.file.url;
+  }
+  const userUpdated = await User.findByIdAndUpdate(user._id, newUserDetails,{new:true})
   
   res.json(userUpdated);
   req.session.currentUser = userUpdated;
