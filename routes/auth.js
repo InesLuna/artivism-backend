@@ -23,11 +23,21 @@ router.get('/me', isLoggedIn(), (req, res, next) => {
   res.json(req.session.currentUser);
 });
 
-//GEt '/all
+//GEt '/all'
 router.get('/all', async (req, res, next) => {
   const usersList = await User.find()
   res.json(usersList);
 });
+
+//GEt '/one'
+router.get('/:id', async (req, res, next) => {
+  const userId = req.params.id 
+  
+  const findUser = await User.findById(userId)
+  
+  res.json(findUser);
+});
+
 
 //  POST    '/login'
 
