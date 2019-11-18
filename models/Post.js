@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const postSchema = new Schema({
-    author: [{
+    author: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-      }],
+      },
     theme: {
         type: String,  
         required: true
@@ -18,7 +18,7 @@ const postSchema = new Schema({
         type: String,  
         required: true
         },
-    images: {
+    userImage: {
         type: Array,  
         required: true
         },

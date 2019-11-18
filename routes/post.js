@@ -18,23 +18,30 @@ const {
 
 // GET '/'
 router.get('/', async (req, res, next) => {
-    const postsList = await Post.find()
+    const postsList = await Post.find().populate('author')
     res.json(postsList);
+});
+
+// GET user posts '/'
+router.get('/user/posts',isLoggedIn(), async (req, res, next) => {
+  const userId = req.session.currentUser._id
+  const postsList = await Post.find({author: userId})
+  res.json(postsList);
 });
 
 // GET '/:id'
 router.get('/:id', isLoggedIn(), async (req, res, next) => {
     const postId = req.params.id
-    const postDetail = await Post.findById(postId)
+    const postDetail = await Post.findById(postId).populate('author')
     res.json(postDetail);
 });
 
 //  POST    '/create'
 
-router.post("/create", isLoggedIn(), uploadCloud.single('images'), async (req, res, next) => {
-    const { theme, city, country, makeThisHappend, textContent } = req.body;
+router.post("/create", isLoggedIn(), async (req, res, next) => {
+    const { theme, city, country, makeThisHappend, textContent, userImage } = req.body;
     const user = req.session.currentUser
-    const images = req.file.url
+    console.log(userImage)
     try {
         //montar post
         const newPostDetails = {
@@ -44,7 +51,7 @@ router.post("/create", isLoggedIn(), uploadCloud.single('images'), async (req, r
             country,
             makeThisHappend,
             textContent,
-            images
+            userImage
         }
 
         const newPost = await Post.create(newPostDetails);

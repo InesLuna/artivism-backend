@@ -12,10 +12,11 @@ const MongoStore = require ('connect-mongo')(session);
 const cors = require('cors')
 
 //Routes files require
-const indexRouter = require('./routes/index');
+/* const indexRouter = require('./routes/index'); */
 const authRouter = require('./routes/auth');
 const postRouter = require('./routes/post');
 const commentsRouter = require('./routes/comments');
+const imagesRouter = require('./routes/images');
 
 
 // EXPRESS SERVER INSTANCE
@@ -70,10 +71,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // ROUTER MIDDLEWARE
-app.use('/', indexRouter);
+/* app.use('/', indexRouter); */
 app.use('/auth', authRouter);
 app.use('/posts', postRouter);
 app.use('/posts', commentsRouter);
+app.use('/images', imagesRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

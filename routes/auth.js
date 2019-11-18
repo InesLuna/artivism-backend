@@ -67,8 +67,8 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), async (req, res, next
 
 //  POST    '/signup'
 
-router.post("/signup", uploadCloud.single('userImage'), isNotLoggedIn(), validationLoggin(), async (req, res, next) => {
-    const { username, email, aboutMe, password } = req.body;
+router.post("/signup", isNotLoggedIn(), validationLoggin(), async (req, res, next) => {
+    const { username, email, aboutMe, password, userImage } = req.body;
 
     try {
   
@@ -86,13 +86,11 @@ router.post("/signup", uploadCloud.single('userImage'), isNotLoggedIn(), validat
         username,
         email,
         aboutMe,
-        password:hashPass
+        password:hashPass,
+        userImage
       }
 
       //check if user included a custom avatar
-      if(req.file){
-        newUserDetails.userImage = req.file.url;
-      }
       const newUser = await User.create(newUserDetails);
      
         req.session.currentUser = newUser;
