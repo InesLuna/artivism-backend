@@ -18,7 +18,7 @@ const {
 
 // GET '/'
 router.get('/', async (req, res, next) => {
-    const postsList = await Post.find().populate('author')
+    const postsList = await Post.find().sort({created_at: -1}).populate('author')
     res.json(postsList);
 });
 
@@ -32,8 +32,20 @@ router.get('/user/posts',isLoggedIn(), async (req, res, next) => {
 
 // GET '/:id'
 router.get('/:id', isLoggedIn(), async (req, res, next) => {
+
     const postId = req.params.id
+    const userId = req.session.currentUser._id
     const postDetail = await Post.findById(postId).populate('author')
+
+    
+
+    if(userId === postDetail.author._id){
+      const resetNot = await Post.findByIdAndUpdate(postId, {notifications: 0})
+      console.log(postDetail.author._id)
+    console.log(userId)
+    }
+    
+    
     res.json(postDetail);
 });
 

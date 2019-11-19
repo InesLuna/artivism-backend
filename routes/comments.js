@@ -27,8 +27,11 @@ router.post("/:postId/create", isLoggedIn(), async (req, res, next) => {
     console.log(textContent)
     const user = req.session.currentUser
     const {postId} = req.params
+
     try {
         const newComment = await Comment.create({ textContent, author: user._id, postOrigin: postId });
+        const notifications = await Post.findByIdAndUpdate(postId, {$inc: {notifications: 1}})
+      //console.log(notifications)
         res
           .status(200) //  OK
           .json(newComment);
