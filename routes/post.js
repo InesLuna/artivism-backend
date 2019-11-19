@@ -26,6 +26,7 @@ router.get('/', async (req, res, next) => {
 router.get('/user/posts',isLoggedIn(), async (req, res, next) => {
   const userId = req.session.currentUser._id
   const postsList = await Post.find({author: userId})
+  console.log(postsList)
   res.json(postsList);
 });
 

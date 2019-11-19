@@ -29,14 +29,7 @@ router.get('/all', async (req, res, next) => {
   res.json(usersList);
 });
 
-//GEt '/one'
-router.get('/:id', async (req, res, next) => {
-  const userId = req.params.id 
-  
-  const findUser = await User.findById(userId)
-  
-  res.json(findUser);
-});
+
 
 
 //  POST    '/login'
@@ -152,6 +145,15 @@ router.get('/private', isLoggedIn(), (req, res, next) => {
   res
     .status(200)  // OK
     .json({ message: 'Test - User is logged in'});
+});
+
+//GEt '/one'
+router.get('/:id', isLoggedIn(), async (req, res, next) => {
+  const userId = req.params.id 
+  
+  const findUser = await User.findById(userId)
+  
+  res.json(findUser);
 });
 
 
