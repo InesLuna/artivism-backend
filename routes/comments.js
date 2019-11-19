@@ -16,7 +16,7 @@ const {
 // GET '/:id/comments'
 router.get('/:postId/comments', isLoggedIn(), async (req, res, next) => {
     const {postId} = req.params
-    const commentsList = await Comment.find({postOrigin: postId})
+    const commentsList = await Comment.find({postOrigin: postId}).populate('author')
     res.json(commentsList);
 });
 
@@ -24,10 +24,11 @@ router.get('/:postId/comments', isLoggedIn(), async (req, res, next) => {
 
 router.post("/:postId/create", isLoggedIn(), async (req, res, next) => {
     const { textContent } = req.body;
+    console.log(textContent)
     const user = req.session.currentUser
     const {postId} = req.params
     try {
-        const newComment = await Comment.create({ author: user._id, postOrigin: postId, textContent });
+        const newComment = await Comment.create({ textContent, author: user._id, postOrigin: postId });
         res
           .status(200) //  OK
           .json(newComment);
