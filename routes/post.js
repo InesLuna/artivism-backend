@@ -37,12 +37,13 @@ router.get('/:id', isLoggedIn(), async (req, res, next) => {
     const userId = req.session.currentUser._id
     const postDetail = await Post.findById(postId).populate('author')
 
-    
+    console.log(typeof postDetail.author._id)
+    console.log(typeof userId)
 
-    if(userId === postDetail.author._id){
+    if(userId == postDetail.author._id){
       const resetNot = await Post.findByIdAndUpdate(postId, {notifications: 0})
       console.log(postDetail.author._id)
-    console.log(userId)
+      console.log(userId)
     }
     
     

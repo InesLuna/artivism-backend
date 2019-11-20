@@ -62,6 +62,7 @@ router.post('/login', isNotLoggedIn(), validationLoggin(), async (req, res, next
 
 router.post("/signup", isNotLoggedIn(), validationLoggin(), async (req, res, next) => {
     const { username, email, aboutMe, password, userImage } = req.body;
+    console.log(req.body)
 
     try {
   

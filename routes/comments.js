@@ -16,7 +16,7 @@ const {
 // GET '/:id/comments'
 router.get('/:postId/comments', isLoggedIn(), async (req, res, next) => {
     const {postId} = req.params
-    const commentsList = await Comment.find({postOrigin: postId}).populate('author')
+    const commentsList = await Comment.find({postOrigin: postId}).sort({created_at: -1}).populate('author')
     res.json(commentsList);
 });
 
@@ -31,10 +31,11 @@ router.post("/:postId/create", isLoggedIn(), async (req, res, next) => {
     try {
         const newComment = await Comment.create({ textContent, author: user._id, postOrigin: postId });
         const notifications = await Post.findByIdAndUpdate(postId, {$inc: {notifications: 1}})
+        const newCommmentPopulated = await Comment.findById(newComment._id).populate('author')
       //console.log(notifications)
         res
           .status(200) //  OK
-          .json(newComment);
+          .json(newCommmentPopulated);
       
     } catch (error) {
       next(error);
