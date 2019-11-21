@@ -106,4 +106,29 @@ router.delete('/:id/delete', isLoggedIn(), async (req, res, next) => {
     return; 
   });
 
+  //SEARCH '/search'
+
+  router.post('/search', isLoggedIn(), async (req, res, next) => {
+    const {
+      terms
+    } = req.body;
+    console.log(req.body)
+    console.log(terms)
+    try {
+      const posts = await Post.find({
+        $text: {
+          $search: terms
+        }
+      }).populate('author');
+
+      
+      res
+        .status(200)
+        .json(posts);
+        console.log(posts)
+    } catch (error) {
+      next(error)
+    }
+  });
+  
   module.exports = router;
